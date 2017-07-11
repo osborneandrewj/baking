@@ -1,10 +1,13 @@
 package com.example.zark.baking;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import com.example.zark.baking.adapters.RecipeCardAdapter;
 import com.example.zark.baking.models.Recipe;
@@ -22,11 +25,12 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int ONE_CARD_WIDE = 1;
+
 
     private RecyclerView mRecyclerView;
     private RecipeCardAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutmanager;
-    private static final int ONE_CARD_WIDE = 1;
 
     private RecipeDbApi mService;
 
@@ -36,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recipe_cards_recycler_view);
-
+        mRecyclerView.setHasFixedSize(true);
         // Select gridlayout size based on screen width and orientation
         mLayoutmanager = new GridLayoutManager(this, 1);
 
@@ -48,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
         getRecipeData();
     }
 
+    /**
+     * Use retrofit to retrieve recipe data from the Udacity server
+     */
     public void getRecipeData() {
         if (mService == null) {
             mService = RecipeDbApiClient.getClient().create(RecipeDbApi.class);
@@ -66,11 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
                 hideEmptyState();
 
-                Log.v(TAG, "Hey, something's here!");
-                for (int i=0; i<response.body().size(); i++) {
-                    String name = response.body().get(i).getName();
-                    Log.v(TAG, "Recipe name: " + name);
-                }
+                List<Recipe> recipeList = response.body();
+                mAdapter.setNewRecipeList(recipeList);
             }
 
             @Override
@@ -83,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showEmptyState() {
-
+        //TODO: fill in
     }
 
     public void hideEmptyState() {
-
+        //TODO: fill in
     }
 }

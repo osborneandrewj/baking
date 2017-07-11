@@ -1,10 +1,7 @@
 package com.example.zark.baking.retrofit;
 
 import com.example.zark.baking.models.Recipe;
-import com.example.zark.baking.models.ResultsWrapper;
-
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.http.GET;
 
