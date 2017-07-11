@@ -52,17 +52,28 @@ public class RecipeOverviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recipe_overview, container, false);
+
         mIngredientsAdapter = new IngredientsAdapter(getContext(), null);
         mIngredientsRecyclerView = view.findViewById(R.id.ingredients_recycler_view);
         mIngredientsRecyclerView.setHasFixedSize(true);
-        mIngredientsLayoutManager = new LinearLayoutManager(getContext());
+        mIngredientsLayoutManager = new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
         mIngredientsRecyclerView.setLayoutManager(mIngredientsLayoutManager);
         mIngredientsRecyclerView.setAdapter(mIngredientsAdapter);
 
         mDirectionsAdapter = new DirectionsAdapter(getContext(), null);
         mDirectionsRecyclerView = view.findViewById(R.id.directions_recycler_view);
         mDirectionsRecyclerView.setHasFixedSize(true);
-        mDirectionsLayoutManager = new LinearLayoutManager(getContext());
+        mDirectionsLayoutManager = new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
         mDirectionsRecyclerView.setLayoutManager(mDirectionsLayoutManager);
         mDirectionsRecyclerView.setAdapter(mDirectionsAdapter);
 
@@ -87,6 +98,7 @@ public class RecipeOverviewFragment extends Fragment {
     private void giveRecipeToAdapters() {
         if (mIngredientsAdapter != null) {
             mIngredientsAdapter.setNewRecipe(mCurrentRecipe);
+            mDirectionsAdapter.setNewRecipe(mCurrentRecipe);
 
         }
     }
