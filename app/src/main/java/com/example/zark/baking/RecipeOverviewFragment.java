@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.zark.baking.adapters.DirectionsAdapter;
 import com.example.zark.baking.adapters.IngredientsAdapter;
 import com.example.zark.baking.models.Recipe;
 import com.example.zark.baking.utilities.RecipeBus;
@@ -24,8 +25,11 @@ public class RecipeOverviewFragment extends Fragment {
 
     private Recipe mCurrentRecipe;
     private RecyclerView mIngredientsRecyclerView;
+    private RecyclerView mDirectionsRecyclerView;
     private IngredientsAdapter mIngredientsAdapter;
+    private DirectionsAdapter mDirectionsAdapter;
     private RecyclerView.LayoutManager mIngredientsLayoutManager;
+    private RecyclerView.LayoutManager mDirectionsLayoutManager;
 
     public RecipeOverviewFragment() {
         // Required empty public constructor
@@ -49,12 +53,18 @@ public class RecipeOverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recipe_overview, container, false);
         mIngredientsAdapter = new IngredientsAdapter(getContext(), null);
-        mIngredientsRecyclerView = (RecyclerView) view.findViewById(R.id.ingredients_recycler_view);
+        mIngredientsRecyclerView = view.findViewById(R.id.ingredients_recycler_view);
         mIngredientsRecyclerView.setHasFixedSize(true);
         mIngredientsLayoutManager = new LinearLayoutManager(getContext());
-
         mIngredientsRecyclerView.setLayoutManager(mIngredientsLayoutManager);
         mIngredientsRecyclerView.setAdapter(mIngredientsAdapter);
+
+        mDirectionsAdapter = new DirectionsAdapter(getContext(), null);
+        mDirectionsRecyclerView = view.findViewById(R.id.directions_recycler_view);
+        mDirectionsRecyclerView.setHasFixedSize(true);
+        mDirectionsLayoutManager = new LinearLayoutManager(getContext());
+        mDirectionsRecyclerView.setLayoutManager(mDirectionsLayoutManager);
+        mDirectionsRecyclerView.setAdapter(mDirectionsAdapter);
 
         // Inflate the layout for this fragment
         return view;
@@ -71,14 +81,13 @@ public class RecipeOverviewFragment extends Fragment {
     }
 
     private void displayCurrentRecipe() {
-        String message = mCurrentRecipe.getName();
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+
     }
 
     private void giveRecipeToAdapters() {
         if (mIngredientsAdapter != null) {
             mIngredientsAdapter.setNewRecipe(mCurrentRecipe);
-            Log.v("TAG", "count: " + mIngredientsAdapter.getItemCount());
+
         }
     }
 

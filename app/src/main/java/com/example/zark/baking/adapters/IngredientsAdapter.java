@@ -16,7 +16,6 @@ import java.util.List;
 
 /**
  * Created by Andrew Osborne on 7/11/17.
- *
  */
 
 public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.IngredientsAdapterViewHolder> {
@@ -44,11 +43,11 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
     public void onBindViewHolder(IngredientsAdapterViewHolder holder, int position) {
 
         // Get the current list of ingredients
-            Ingredient currentIngredient = mIngredientList.get(position);
-            holder.mQuantityTextView.setText(MyNumberUtils.formatQuantityToString(
-                    currentIngredient.getQuantity()));
-            holder.mUnitTextView.setText(currentIngredient.getMeasure());
-            holder.mMaterialTextView.setText(currentIngredient.getIngredient());
+        Ingredient currentIngredient = mIngredientList.get(position);
+        holder.mQuantityTextView.setText(MyNumberUtils.formatQuantityToString(
+                currentIngredient.getQuantity()));
+        holder.mUnitTextView.setText(currentIngredient.getMeasure());
+        holder.mMaterialTextView.setText(currentIngredient.getIngredient());
 
 
     }
