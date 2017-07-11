@@ -2,6 +2,7 @@ package com.example.zark.baking.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,8 @@ public class DirectionsAdapter
         // Get the list of steps
         Step currentStep = mStepsList.get(position);
         holder.descriptionTextView.setText(currentStep.getShortDescription());
+        int stepNumber = position + 1;
+        holder.stepNumberTextView.setText(String.valueOf(stepNumber));
 
     }
 
