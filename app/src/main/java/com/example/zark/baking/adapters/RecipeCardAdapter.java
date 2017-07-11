@@ -3,12 +3,12 @@ package com.example.zark.baking.adapters;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.zark.baking.MainActivity;
 import com.example.zark.baking.R;
 import com.example.zark.baking.models.Recipe;
 
@@ -22,17 +22,28 @@ import java.util.List;
 public class RecipeCardAdapter
         extends RecyclerView.Adapter<RecipeCardAdapter.RecipeCardAdapterViewHolder> {
 
+
     private static final String TAG = RecipeCardAdapter.class.getSimpleName();
 
     private Context mContext;
     private LayoutInflater mLayoutInflater;
     private List<Recipe> mRecipeList;
     private Recipe mCurrentRecipe;
+    private final RecipeCardAdapterOnClickHandler mRecipeCardClickHandler;
+
+    public interface RecipeCardAdapterOnClickHandler {
+
+        void onRecipeCardClick();
+
+    }
 
 
-    public RecipeCardAdapter(Context context, List<Recipe> aRecipeList) {
+    public RecipeCardAdapter(Context context, List<Recipe> aRecipeList,
+                             RecipeCardAdapterOnClickHandler handler) {
         mLayoutInflater = LayoutInflater.from(context);
         mRecipeList = aRecipeList;
+        mRecipeCardClickHandler = handler;
+
     }
 
     @Override
@@ -50,10 +61,16 @@ public class RecipeCardAdapter
         // Get current recipe
         mCurrentRecipe = mRecipeList.get(position);
         holder.mRecipeTitleTextView.setText(mCurrentRecipe.getName());
+
+        // When clicked, the recipe card should open RecipeDetailActivity
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.v(TAG, "CardView here! " + mRecipeList.get(position).getName());
+                // MainActivity will open the RecipeDetailActivity
+                mRecipeCardClickHandler.onRecipeCardClick();
+                // otto event bus to share the recipe object
+                MainActivity.sRecipeBus.post(mRecipeList.get(position));
+
             }
         });
 
@@ -64,7 +81,6 @@ public class RecipeCardAdapter
         if (mRecipeList != null) {
             return mRecipeList.size();
         }
-
         return 0;
     }
 

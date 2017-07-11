@@ -1,0 +1,60 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.zark.baking.RecipeOverviewFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:text="@string/ingredients_list_title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        tools:text="Ingredients" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@color/colorLightGrey" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/ingredients_recycler_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        android:paddingStart="4dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorLightGrey" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:text="@string/directions_list_title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        tools:text="Directions" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorLightGrey" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/directions_recycler_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        android:paddingStart="4dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>
