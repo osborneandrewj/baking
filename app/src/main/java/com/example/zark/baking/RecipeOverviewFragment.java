@@ -2,6 +2,7 @@ package com.example.zark.baking;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,13 +10,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.example.zark.baking.adapters.DirectionsAdapter;
 import com.example.zark.baking.adapters.IngredientsAdapter;
+import com.example.zark.baking.models.Ingredient;
 import com.example.zark.baking.models.Recipe;
 import com.example.zark.baking.utilities.RecipeBus;
+import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
 
 
 /**
@@ -23,29 +28,19 @@ import com.squareup.otto.Subscribe;
  */
 public class RecipeOverviewFragment extends Fragment {
 
+    public static Bus sRecipeBus;
+
+    private static final String TAG = RecipeOverviewFragment.class.getSimpleName();
+    private static final String TAG_RECIPE_OBJECT = "Recipe";
+
     private Recipe mCurrentRecipe;
-    private RecyclerView mIngredientsRecyclerView;
-    private RecyclerView mDirectionsRecyclerView;
+    private ArrayList<Ingredient> mIngredients;
+
     private IngredientsAdapter mIngredientsAdapter;
     private DirectionsAdapter mDirectionsAdapter;
-    private RecyclerView.LayoutManager mIngredientsLayoutManager;
-    private RecyclerView.LayoutManager mDirectionsLayoutManager;
 
     public RecipeOverviewFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-     public void onStart() {
-        super.onStart();
-        RecipeBus.getBus().register(this);
-    }
-
-    @Subscribe
-    public void getRecipeObjectFromAdapter(Recipe selectedRecipe) {
-        mCurrentRecipe = selectedRecipe;
-        Log.v("RecipeOverviewFragment", "Got the recipe!" + selectedRecipe.getName());
-
     }
 
     @Override
@@ -53,59 +48,95 @@ public class RecipeOverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recipe_overview, container, false);
 
-        mIngredientsAdapter = new IngredientsAdapter(getContext(), null);
-        mIngredientsRecyclerView = view.findViewById(R.id.ingredients_recycler_view);
-        mIngredientsRecyclerView.setHasFixedSize(true);
-        mIngredientsLayoutManager = new LinearLayoutManager(getContext()) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
-        mIngredientsRecyclerView.setLayoutManager(mIngredientsLayoutManager);
-        mIngredientsRecyclerView.setAdapter(mIngredientsAdapter);
+        setupIngredientsList(view);
+        setupDirectionsList(view);
 
-        mDirectionsAdapter = new DirectionsAdapter(getContext(), null);
-        mDirectionsRecyclerView = view.findViewById(R.id.directions_recycler_view);
-        mDirectionsRecyclerView.setHasFixedSize(true);
-        mDirectionsLayoutManager = new LinearLayoutManager(getContext()) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
-        mDirectionsRecyclerView.setLayoutManager(mDirectionsLayoutManager);
-        mDirectionsRecyclerView.setAdapter(mDirectionsAdapter);
+        sRecipeBus = RecipeBus.getBus();
 
-        // Inflate the layout for this fragment
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mCurrentRecipe = (Recipe) savedInstanceState.getSerializable(TAG_RECIPE_OBJECT);
+            giveRecipeToAdapters();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        sRecipeBus.register(this);
+    }
+
+    private void setupIngredientsList(View view) {
+        mIngredientsAdapter = new IngredientsAdapter(getContext(), null);
+        RecyclerView ingredientsRecyclerView = view.findViewById(R.id.ingredients_recycler_view);
+        ingredientsRecyclerView.setHasFixedSize(true);
+        // Scrolling is handled by the NestedScrollView in the main fragment layout
+        RecyclerView.LayoutManager ingredientsLayoutManager = new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+        ingredientsRecyclerView.setLayoutManager(ingredientsLayoutManager);
+        ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
+    }
+
+    private void setupDirectionsList(View view) {
+        mDirectionsAdapter = new DirectionsAdapter(getContext(), null);
+        RecyclerView directionsRecyclerView = view.findViewById(R.id.directions_recycler_view);
+        directionsRecyclerView.setHasFixedSize(true);
+        // Scrolling is handled by the NestedScrollView in the main fragment layout
+        RecyclerView.LayoutManager directionsLayoutManager = new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+        directionsRecyclerView.setLayoutManager(directionsLayoutManager);
+        directionsRecyclerView.setAdapter(mDirectionsAdapter);
+    }
+
+    @Subscribe
+    public void getRecipeObjectFromAdapter(Recipe selectedRecipe) {
+        mCurrentRecipe = selectedRecipe;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
         if (mCurrentRecipe != null) {
-            displayCurrentRecipe();
             giveRecipeToAdapters();
         }
     }
 
-    private void displayCurrentRecipe() {
+    public void giveRecipeToAdapters() {
+        if (mIngredientsAdapter != null) {
+            mIngredientsAdapter.setNewData(mCurrentRecipe);
+        }
 
+        if (mDirectionsAdapter != null) {
+            mDirectionsAdapter.setNewRecipe(mCurrentRecipe);
+        }
     }
 
-    private void giveRecipeToAdapters() {
-        if (mIngredientsAdapter != null) {
-            mIngredientsAdapter.setNewRecipe(mCurrentRecipe);
-            mDirectionsAdapter.setNewRecipe(mCurrentRecipe);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(TAG_RECIPE_OBJECT, mCurrentRecipe);
 
-        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        RecipeBus.getBus().unregister(this);
+        if (sRecipeBus != null) {
+            sRecipeBus.unregister(this);
+        }
     }
 }

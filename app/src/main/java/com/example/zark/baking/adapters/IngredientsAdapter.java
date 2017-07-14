@@ -1,6 +1,7 @@
 package com.example.zark.baking.adapters;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +13,12 @@ import com.example.zark.baking.models.Ingredient;
 import com.example.zark.baking.models.Recipe;
 import com.example.zark.baking.utilities.MyNumberUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Andrew Osborne on 7/11/17.
+ *
  */
 
 public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.IngredientsAdapterViewHolder> {
@@ -61,8 +64,10 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         }
     }
 
-    public void setNewRecipe(Recipe recipe) {
-        mIngredientList = recipe.getIngredients();
+    public void setNewData(Recipe recipe) {
+        if (recipe != null) {
+            mIngredientList = recipe.getIngredients();
+        }
         notifyDataSetChanged();
     }
 
