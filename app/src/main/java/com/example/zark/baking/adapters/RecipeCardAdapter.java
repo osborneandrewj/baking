@@ -66,7 +66,7 @@ public class RecipeCardAdapter
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // MainActivity will open the RecipeDetailActivity
+                // The MainActivity will open the RecipeDetailActivity
                 mRecipeCardClickHandler.onRecipeCardClick();
                 // otto event bus to share the recipe object
                 MainActivity.sRecipeBus.post(mRecipeList.get(position));

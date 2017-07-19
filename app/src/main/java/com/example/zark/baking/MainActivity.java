@@ -24,7 +24,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * desiree
+ *
  */
 
 public class MainActivity extends AppCompatActivity
@@ -113,11 +113,19 @@ public class MainActivity extends AppCompatActivity
         startActivity(startRecipeDetailActivityIntent);
     }
 
+    /**
+     * Receives the Recipe object corresponding to the user-selected recipe CardView. We need to
+     * get this Recipe object as it needs to be produced here.
+     */
     @Subscribe
     public void getRecipeObjectFromAdapter(Recipe selectedRecipe) {
         mSelectedRecipe = selectedRecipe;
     }
 
+    /**
+     * Produces the Recipe object so that the recipe detail fragments (which have not yet been
+     * created) can receive the Recipe object when they subscribe to the Otto event bus.
+     */
     @Produce
     public Recipe produceRecipeForRecipeDetailActivity() {
         return mSelectedRecipe;

@@ -1,32 +1,29 @@
 package com.example.zark.baking;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.example.zark.baking.adapters.DirectionsAdapter;
 import com.example.zark.baking.adapters.IngredientsAdapter;
-import com.example.zark.baking.models.Ingredient;
 import com.example.zark.baking.models.Recipe;
 import com.example.zark.baking.utilities.RecipeBus;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.util.ArrayList;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecipeOverviewFragment extends Fragment {
+public class RecipeOverviewFragment extends Fragment implements DirectionsAdapter.MyDirectionsClickListener {
 
     public static Bus sRecipeBus;
 
@@ -34,10 +31,18 @@ public class RecipeOverviewFragment extends Fragment {
     private static final String TAG_RECIPE_OBJECT = "Recipe";
 
     private Recipe mCurrentRecipe;
-    private ArrayList<Ingredient> mIngredients;
-
     private IngredientsAdapter mIngredientsAdapter;
     private DirectionsAdapter mDirectionsAdapter;
+    OnStepClickedListener mCallback;
+
+    public interface OnStepClickedListener {
+        public void OnStepClicked(int stepNumber);
+    }
+
+    @Override
+    public void handleClick(int stepNumber) {
+        mCallback.OnStepClicked(stepNumber);
+    }
 
     public RecipeOverviewFragment() {
         // Required empty public constructor
@@ -47,6 +52,7 @@ public class RecipeOverviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recipe_overview, container, false);
+
 
         setupIngredientsList(view);
         setupDirectionsList(view);
@@ -63,6 +69,18 @@ public class RecipeOverviewFragment extends Fragment {
         if (savedInstanceState != null) {
             mCurrentRecipe = (Recipe) savedInstanceState.getSerializable(TAG_RECIPE_OBJECT);
             giveRecipeToAdapters();
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            mCallback = (OnStepClickedListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnStepClickedListener");
         }
     }
 
@@ -88,7 +106,7 @@ public class RecipeOverviewFragment extends Fragment {
     }
 
     private void setupDirectionsList(View view) {
-        mDirectionsAdapter = new DirectionsAdapter(getContext(), null);
+        mDirectionsAdapter = new DirectionsAdapter(getContext(), null, this);
         RecyclerView directionsRecyclerView = view.findViewById(R.id.directions_recycler_view);
         directionsRecyclerView.setHasFixedSize(true);
         // Scrolling is handled by the NestedScrollView in the main fragment layout

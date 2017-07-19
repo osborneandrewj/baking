@@ -2,10 +2,10 @@ package com.example.zark.baking.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.zark.baking.R;
@@ -22,12 +22,18 @@ import java.util.List;
 public class DirectionsAdapter
         extends RecyclerView.Adapter<DirectionsAdapter.DirectionsAdapterViewHolder> {
 
+    private final MyDirectionsClickListener mClickHandler;
     private LayoutInflater mLayoutInflater;
     private List<Step> mStepsList;
 
-    public DirectionsAdapter(Context context, List<Step> stepsList) {
+    public interface MyDirectionsClickListener {
+        void handleClick(int stepNumber);
+    }
+
+    public DirectionsAdapter(Context context, List<Step> stepsList, MyDirectionsClickListener listener) {
         mLayoutInflater = LayoutInflater.from(context);
         mStepsList = stepsList;
+        mClickHandler = listener;
     }
 
     @Override
@@ -40,7 +46,7 @@ public class DirectionsAdapter
     }
 
     @Override
-    public void onBindViewHolder(DirectionsAdapterViewHolder holder, int position) {
+    public void onBindViewHolder(DirectionsAdapterViewHolder holder, final int position) {
 
         // Get the list of steps
         Step currentStep = mStepsList.get(position);
@@ -67,16 +73,28 @@ public class DirectionsAdapter
     /**
      * Inner class to store and recycle views as they are scrolled off screen
      */
-    public class DirectionsAdapterViewHolder extends RecyclerView.ViewHolder {
+    public class DirectionsAdapterViewHolder extends RecyclerView.ViewHolder implements
+            View.OnClickListener {
 
         public TextView stepNumberTextView;
         public TextView descriptionTextView;
+        public LinearLayout stepLayout;
 
         public DirectionsAdapterViewHolder(View view) {
             super(view);
 
+            stepLayout = (LinearLayout) view.findViewById(R.id.direction_step_view);
             stepNumberTextView = (TextView) view.findViewById(R.id.tv_step_number);
             descriptionTextView = (TextView) view.findViewById(R.id.tv_step_description);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int stepNumber = getAdapterPosition()+1;
+            if (mClickHandler != null) {
+                mClickHandler.handleClick(stepNumber);
+            }
         }
     }
 }
