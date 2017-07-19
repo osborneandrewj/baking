@@ -1,121 +1,124 @@
 package com.example.zark.baking;
 
-import android.content.Intent;
+import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import com.example.zark.baking.adapters.RecipeCardAdapter;
+import android.widget.Toast;
+
 import com.example.zark.baking.models.Recipe;
-import com.example.zark.baking.retrofit.RecipeDbApi;
-import com.example.zark.baking.retrofit.RecipeDbApiClient;
-import com.example.zark.baking.utilities.MyNetworkUtils;
 import com.example.zark.baking.utilities.RecipeBus;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  *
  */
 
 public class MainActivity extends AppCompatActivity
-        implements RecipeCardAdapter.RecipeCardAdapterOnClickHandler {
+        implements RecipeCardsFragment.OnRecipeSelectionListener,
+        RecipeOverviewFragment.OnStepClickedListener {
 
     public static Bus sRecipeBus;
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int ONE_CARD_WIDE = 1;
+    private static final String KEY_RECIPE_OVERVIEW_FRAGMENT = "RecipeOverviewFragment";
+    private static final String KEY_STEP_NUMBER = "stepNumber";
+    private static final String KEY_CURRENT_FRAGMENT = "currentFragment";
 
-
-    private RecyclerView mRecyclerView;
-    private RecipeCardAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutmanager;
     private Recipe mSelectedRecipe;
+    private RecipeCardsFragment mRecipeCardsFragment;
+    private RecipeOverviewFragment mRecipeOverviewFragment;
+    private Fragment mCurrentFragment;
 
-    private RecipeDbApi mService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recipe_cards_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        // Select gridlayout size based on screen width and orientation
-        mLayoutmanager = new GridLayoutManager(this, 1);
-
-        mAdapter = new RecipeCardAdapter(this, new ArrayList<Recipe>(), this);
-
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(mLayoutmanager);
 
         // Event Bus for sending Recipe objects
         sRecipeBus = RecipeBus.getBus();
 
-        getRecipeDataFromUdacity();
+        if (savedInstanceState != null) {
+            mCurrentFragment = getSupportFragmentManager().getFragment(
+                    savedInstanceState,
+                    KEY_CURRENT_FRAGMENT);
+            getSupportFragmentManager().beginTransaction().replace(R.id.frag_container,
+                    mCurrentFragment).commit();
+        } else {
+            displayRecipeCardFragment();
+        }
+    }
+
+    public void displayRecipeCardFragment() {
+        if (mRecipeCardsFragment == null) {
+            mRecipeCardsFragment = new RecipeCardsFragment();
+        }
+
+        mCurrentFragment = mRecipeCardsFragment;
+
+        getSupportFragmentManager().beginTransaction().replace(
+                R.id.frag_container, mRecipeCardsFragment).commit();
     }
 
     /**
-     * Use retrofit to retrieve recipe data from the Udacity server
+     * From RecipeCardsFragment
      */
-    public void getRecipeDataFromUdacity() {
-        if (mService == null) {
-            mService = RecipeDbApiClient.getClient().create(RecipeDbApi.class);
-        }
-
-        // Check for available network connection
-        if (!MyNetworkUtils.doesNetworkConnectionExist(this)) {
-            showEmptyState();
-            return;
-        }
-
-        Call<List<Recipe>> callRecipes = mService.getRecipeList();
-        callRecipes.enqueue(new Callback<List<Recipe>>() {
-            @Override
-            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-
-                hideEmptyState();
-
-                List<Recipe> recipeList = response.body();
-                mAdapter.setNewRecipeList(recipeList);
-            }
-
-            @Override
-            public void onFailure(Call<List<Recipe>> call, Throwable t) {
-                Log.v(TAG, "Shoot, nothing here.");
-                t.printStackTrace();
-                showEmptyState();
-            }
-        });
+    @Override
+    public void onRecipeSelection() {
+        displayRecipeOverviewFragment();
     }
 
-    public void showEmptyState() {
-        //TODO: fill in
+    public void displayRecipeOverviewFragment() {
+        if (mRecipeOverviewFragment == null) {
+            mRecipeOverviewFragment = new RecipeOverviewFragment();
+        }
+
+        mCurrentFragment = mRecipeOverviewFragment;
+
+        getSupportFragmentManager().beginTransaction().replace(
+                R.id.frag_container, mRecipeOverviewFragment).commit();
     }
 
-    public void hideEmptyState() {
-        //TODO: fill in
+    /**
+     * From RecipeOverviewFragment
+     *
+     * @param stepNumber the step that the user selected
+     *
+     */
+    @Override
+    public void OnStepClicked(int stepNumber) {
+        displayStepDetailFragment(stepNumber);
+    }
+
+    public void displayStepDetailFragment(int stepNumber) {
+        Bundle args = new Bundle();
+        args.putInt(KEY_STEP_NUMBER, stepNumber);
+
+        StepDetailFragment detailFragment = new StepDetailFragment();
+        detailFragment.setArguments(args);
+
+        mCurrentFragment = detailFragment;
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.frag_container,
+                detailFragment).commit();
     }
 
     @Override
-    public void onRecipeCardClick() {
-        Intent startRecipeDetailActivityIntent = new Intent(
-                this, RecipeDetailActivity.class);
-        startActivity(startRecipeDetailActivityIntent);
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Save the current fragment's instance
+        getSupportFragmentManager().putFragment(
+                outState, KEY_CURRENT_FRAGMENT, mCurrentFragment);
     }
 
     /**
      * Receives the Recipe object corresponding to the user-selected recipe CardView. We need to
-     * get this Recipe object as it needs to be produced here.
+     * get this Recipe object as it needs to be produced in this activity.
      */
     @Subscribe
     public void getRecipeObjectFromAdapter(Recipe selectedRecipe) {
