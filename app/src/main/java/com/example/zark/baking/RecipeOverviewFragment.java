@@ -146,7 +146,7 @@ public class RecipeOverviewFragment extends Fragment implements DirectionsAdapte
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(TAG_RECIPE_OBJECT, mCurrentRecipe);
+        outState.putParcelable(TAG_RECIPE_OBJECT, mCurrentRecipe);
 
     }
 

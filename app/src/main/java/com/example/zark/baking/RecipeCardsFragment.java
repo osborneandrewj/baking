@@ -105,7 +105,7 @@ public class RecipeCardsFragment extends Fragment implements
 
                 hideEmptyState();
 
-                Log.v(TAG, "Hey, guys, I'm talking again");
+                Log.v(TAG, "Communicating with server...");
 
                 mRecipeList = response.body();
                 mAdapter.setNewRecipeList(mRecipeList);
