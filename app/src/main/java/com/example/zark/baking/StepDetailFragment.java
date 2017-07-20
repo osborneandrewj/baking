@@ -12,11 +12,7 @@ import android.widget.TextView;
 
 import com.example.zark.baking.models.Recipe;
 import com.example.zark.baking.models.Step;
-import com.example.zark.baking.utilities.RecipeBus;
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
-import java.util.List;
 
 
 /**
@@ -24,16 +20,9 @@ import java.util.List;
  */
 public class StepDetailFragment extends Fragment {
 
-    public static Bus sRecipeBus;
-
-    private static final String TAG_RECIPE_OBJECT = "Recipe";
-    private static final String KEY_STEP_NUMBER = "stepNumber";
-
-
-    private Recipe mCurrentRecipe;
+    private static final String KEY_SELECTED_STEP = "selectedStep";
     private TextView mStepDescriptionTextView;
-    private int mStepNumber;
-
+    private Step mCurrentStep;
 
     public StepDetailFragment() {
         // Required empty public constructor
@@ -48,18 +37,17 @@ public class StepDetailFragment extends Fragment {
 
         mStepDescriptionTextView = view.findViewById(R.id.tv_step_description);
 
-        sRecipeBus = RecipeBus.getBus();
-
-        if (getArguments() != null) {
-            mStepNumber = getArguments().getInt(KEY_STEP_NUMBER, -1);
-            Log.v("detail", "step number: " + mStepNumber);
+        if (savedInstanceState == null) {
+            if (getArguments() != null) {
+                mCurrentStep = getArguments().getParcelable(KEY_SELECTED_STEP);
+                Log.v("detail", "step: " + mCurrentStep.getDescription());
+            }
+        } else {
+            mCurrentStep = savedInstanceState.getParcelable(KEY_SELECTED_STEP);
         }
 
-
-        if (mCurrentRecipe != null) {
-            Log.v("detail", "recipe is not null!");
-            List<Step> stepsList = mCurrentRecipe.getSteps();
-            mStepDescriptionTextView.setText(stepsList.get(mStepNumber).getDescription());
+        if (mCurrentStep != null) {
+            displayStepDetails();
         } else {
 
         }
@@ -67,52 +55,17 @@ public class StepDetailFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            mCurrentRecipe = (Recipe) savedInstanceState.getSerializable(TAG_RECIPE_OBJECT);
-            Log.v("detail", "what");
-            List<Step> stepsList = mCurrentRecipe.getSteps();
-            mStepDescriptionTextView.setText(stepsList.get(mStepNumber).getDescription());
-        }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        sRecipeBus.register(this);
-    }
-
-    @Subscribe
-    public void getRecipeObjectFromAdapter(Recipe selectedRecipe) {
-        mCurrentRecipe = selectedRecipe;
-        Log.v("detail", "got a recipe" + selectedRecipe.getName());
-        setRecipeData();
-    }
-
-    public void setRecipeData() {
-        if (mCurrentRecipe != null) {
-            Log.v("detail", "recipe is not null!");
-            List<Step> stepsList = mCurrentRecipe.getSteps();
-            mStepDescriptionTextView.setText(stepsList.get(mStepNumber).getDescription());
+    public void displayStepDetails() {
+        if (mCurrentStep != null) {
+            mStepDescriptionTextView.setText(mCurrentStep.getDescription());
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(TAG_RECIPE_OBJECT, mCurrentRecipe);
+        outState.putParcelable(KEY_SELECTED_STEP, mCurrentStep);
 
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (sRecipeBus != null) {
-            sRecipeBus.unregister(this);
-        }
     }
 
 }

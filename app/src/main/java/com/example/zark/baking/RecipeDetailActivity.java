@@ -4,24 +4,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.zark.baking.models.Recipe;
+import com.example.zark.baking.models.Step;
+import com.example.zark.baking.utilities.RecipeBus;
+import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
+
+import java.util.List;
 
 
 public class RecipeDetailActivity extends AppCompatActivity implements RecipeOverviewFragment.OnStepClickedListener{
+
+    public static Bus sRecipeBus;
 
     private static final String TAG = RecipeDetailActivity.class.getSimpleName();
     private static final String KEY_RECIPE_OVERVIEW_FRAGMENT = "RecipeOverviewFragment";
     private static final String KEY_STEP_NUMBER = "stepNumber";
     private static final String KEY_SELECTED_RECIPE = "selectedRecipe";
-
-
+    private static final String KEY_SELECTED_STEP = "selectedStep";
     private RecipeOverviewFragment mRecipeOverviewFragment;
     private View mDetailsPane;
     private boolean mDualPane = false;
-    private boolean mTabletMode = false;
     private Recipe mCurrentRecipe;
 
 
@@ -30,23 +34,30 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
 
-        // If this view exists, which only exists in the sw960dp version of activity_mail.xml,
-        // then dual pane mode will be enabled
+        // Event Bus for sending Recipe objects to fragments
+        sRecipeBus = RecipeBus.getBus();
+
+        // If this view container exists, which only exists in the sw900dp version of
+        // activity_recipe_detail.xml, then dual pane mode will be enabled
         mDetailsPane = findViewById(R.id.detail_container);
         if (mDetailsPane != null) {
-            Log.v(TAG, "Dual pane enabled");
             mDualPane = true;
         }
 
-        if (getIntent().getExtras() != null) {
-            mCurrentRecipe = getIntent().getParcelableExtra(KEY_SELECTED_RECIPE);
-            String message = mCurrentRecipe.getName();
-            Log.v(TAG, "Detail of " + message);
-        }
-
         if (savedInstanceState == null) {
-
+            // Get the Recipe object from the intent and place is on the Otto event bus
+            if (getIntent().getExtras() != null) {
+                mCurrentRecipe = getIntent().getParcelableExtra(KEY_SELECTED_RECIPE);
+                displayRecipeOverview();
+                if (mDualPane) {
+                    displayStepDetail(0);
+                }
+            }
+        } else {
+            mCurrentRecipe = savedInstanceState.getParcelable(KEY_SELECTED_RECIPE);
         }
+
+        getSupportActionBar().setTitle(mCurrentRecipe.getName());
     }
 
     @Override
@@ -55,40 +66,51 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
         outState.putParcelable(KEY_SELECTED_RECIPE, mCurrentRecipe);
     }
 
-    private void showDetailsPane() {
-        mDetailsPane.setVisibility(View.GONE);
-    }
+    public void displayRecipeOverview() {
+        if (mRecipeOverviewFragment == null) {
+            mRecipeOverviewFragment = new RecipeOverviewFragment();
+        }
 
-    private void hideDetailsPane() {
-        mDetailsPane.setVisibility(View.VISIBLE);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_container, mRecipeOverviewFragment).commit();
     }
 
     /**
-     * From RecipeOverviewFragment
+     * Callback from RecipeOverviewFragment
      *
      * @param stepNumber the step that the user selected
      */
     @Override
     public void OnStepClicked(int stepNumber) {
-        displayStepDetailFragment(stepNumber);
+        displayStepDetail(stepNumber);
     }
 
-    public void displayStepDetailFragment(int stepNumber) {
+    public void displayStepDetail(int stepNumber) {
         Bundle args = new Bundle();
         args.putInt(KEY_STEP_NUMBER, stepNumber);
-
+        args.putParcelable(KEY_SELECTED_STEP, getCurrentStep(stepNumber));
         StepDetailFragment detailFragment = new StepDetailFragment();
         detailFragment.setArguments(args);
 
-        // if dual pane is enabled, open this StepDetailFragment in the detail pane
         if (mDualPane) {
-            getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(
-                    R.id.detail_container,
-                    detailFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.detail_container, detailFragment)
+                    .commit();
         } else {
-            getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.frag_container,
+            getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.main_container,
                     detailFragment).commit();
         }
+    }
+
+    /**
+     * Returns a Step object of the given step number
+     *
+     * @param stepNumber number of the desired step
+     * @return Step object of the given step number
+     */
+    public Step getCurrentStep(int stepNumber) {
+        List<Step> stepsList = mCurrentRecipe.getSteps();
+        Step currentStep = stepsList.get(stepNumber);
+        return currentStep;
     }
 
     @Override
@@ -106,7 +128,21 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
      */
     @Produce
     public Recipe produceRecipeForRecipeDetailActivity() {
-        //return mCurrentRecipe
-        return null;
+        Log.v(TAG, "Producing recipe: " + mCurrentRecipe.getName());
+        return mCurrentRecipe;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        sRecipeBus.register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (sRecipeBus != null) {
+            sRecipeBus.unregister(this);
+        }
     }
 }

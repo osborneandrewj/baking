@@ -67,9 +67,15 @@ public class RecipeOverviewFragment extends Fragment implements DirectionsAdapte
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
-            mCurrentRecipe = (Recipe) savedInstanceState.getSerializable(TAG_RECIPE_OBJECT);
+            mCurrentRecipe = (Recipe) savedInstanceState.getParcelable(TAG_RECIPE_OBJECT);
             giveRecipeToAdapters();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(TAG_RECIPE_OBJECT, mCurrentRecipe);
     }
 
     @Override
@@ -141,13 +147,6 @@ public class RecipeOverviewFragment extends Fragment implements DirectionsAdapte
         if (mDirectionsAdapter != null) {
             mDirectionsAdapter.setNewRecipe(mCurrentRecipe);
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(TAG_RECIPE_OBJECT, mCurrentRecipe);
-
     }
 
     @Override

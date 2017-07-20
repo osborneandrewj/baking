@@ -91,7 +91,7 @@ public class DirectionsAdapter
 
         @Override
         public void onClick(View view) {
-            int stepNumber = getAdapterPosition()+1;
+            int stepNumber = getAdapterPosition();
             if (mClickHandler != null) {
                 mClickHandler.handleClick(stepNumber);
             }
