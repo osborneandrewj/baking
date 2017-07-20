@@ -3,6 +3,7 @@ package com.example.zark.baking;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,10 +38,13 @@ public class RecipeCardsFragment extends Fragment implements
     private static final String TAG = RecipeCardsFragment.class.getSimpleName();
     private static final int ONE_CARD_WIDE = 1;
 
+    private List<Recipe> mRecipeList;
+
     private RecyclerView mRecyclerView;
     private RecipeCardAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutmanager;
     private RecipeDbApi mService;
+    private boolean mDualPane;
 
     private OnRecipeSelectionListener mListener;
 
@@ -48,6 +52,12 @@ public class RecipeCardsFragment extends Fragment implements
         // Required empty public constructor
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        getRecipeDataFromUdacity();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,14 +70,12 @@ public class RecipeCardsFragment extends Fragment implements
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recipe_cards_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         // Select gridlayout size based on screen width and orientation
-        mLayoutmanager = new GridLayoutManager(getContext(), 1);
+        mLayoutmanager = new GridLayoutManager(getContext(), ONE_CARD_WIDE);
 
         mAdapter = new RecipeCardAdapter(getContext(), new ArrayList<Recipe>(), this);
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(mLayoutmanager);
-
-        getRecipeDataFromUdacity();
 
         return view;
     }
@@ -76,6 +84,12 @@ public class RecipeCardsFragment extends Fragment implements
      * Use retrofit to retrieve recipe data from the Udacity server
      */
     public void getRecipeDataFromUdacity() {
+
+        if (mRecipeList != null) {
+            mAdapter.setNewRecipeList(mRecipeList);
+            return;
+        }
+
         if (mService == null) {
             mService = RecipeDbApiClient.getClient().create(RecipeDbApi.class);
         }
@@ -93,8 +107,10 @@ public class RecipeCardsFragment extends Fragment implements
 
                 hideEmptyState();
 
-                List<Recipe> recipeList = response.body();
-                mAdapter.setNewRecipeList(recipeList);
+                Log.v(TAG, "Hey, I'm talking again");
+
+                mRecipeList = response.body();
+                mAdapter.setNewRecipeList(mRecipeList);
             }
 
             @Override
@@ -152,4 +168,5 @@ public class RecipeCardsFragment extends Fragment implements
     public interface OnRecipeSelectionListener {
         void onRecipeSelection();
     }
+
 }

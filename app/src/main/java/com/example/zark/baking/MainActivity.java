@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.zark.baking.models.Recipe;
@@ -22,15 +23,18 @@ public class MainActivity extends AppCompatActivity
 
     public static Bus sRecipeBus;
 
+
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String KEY_RECIPE_OVERVIEW_FRAGMENT = "RecipeOverviewFragment";
+    private static final String KEY_RECIPE_CARDS_FRAGMENT = "RecipeCardsFragment";
     private static final String KEY_STEP_NUMBER = "stepNumber";
     private static final String KEY_CURRENT_FRAGMENT = "currentFragment";
 
     private Recipe mSelectedRecipe;
     private RecipeCardsFragment mRecipeCardsFragment;
     private RecipeOverviewFragment mRecipeOverviewFragment;
-    private Fragment mCurrentFragment;
+    private boolean mDualPane;
+    private boolean mTabletMode;
 
 
     @Override
@@ -39,26 +43,27 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
 
+        mDualPane = getResources().getBoolean(R.bool.tabletMode);
+        mTabletMode = getResources().getBoolean(R.bool.dualPane);
+
         // Event Bus for sending Recipe objects
         sRecipeBus = RecipeBus.getBus();
 
-        if (savedInstanceState != null) {
-            mCurrentFragment = getSupportFragmentManager().getFragment(
-                    savedInstanceState,
-                    KEY_CURRENT_FRAGMENT);
-            getSupportFragmentManager().beginTransaction().replace(R.id.frag_container,
-                    mCurrentFragment).commit();
-        } else {
+        if (savedInstanceState == null) {
+            mRecipeCardsFragment = new RecipeCardsFragment();
             displayRecipeCardFragment();
+        } else {
+            mRecipeCardsFragment = (RecipeCardsFragment) getSupportFragmentManager()
+                    .findFragmentByTag(KEY_RECIPE_CARDS_FRAGMENT);
         }
     }
 
-    public void displayRecipeCardFragment() {
-        if (mRecipeCardsFragment == null) {
-            mRecipeCardsFragment = new RecipeCardsFragment();
-        }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 
-        mCurrentFragment = mRecipeCardsFragment;
+    public void displayRecipeCardFragment() {
 
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.frag_container, mRecipeCardsFragment).commit();
@@ -76,11 +81,8 @@ public class MainActivity extends AppCompatActivity
         if (mRecipeOverviewFragment == null) {
             mRecipeOverviewFragment = new RecipeOverviewFragment();
         }
-
-        mCurrentFragment = mRecipeOverviewFragment;
-
         getSupportFragmentManager().beginTransaction().replace(
-                R.id.frag_container, mRecipeOverviewFragment).commit();
+                R.id.frag_container, mRecipeOverviewFragment).addToBackStack(null).commit();
     }
 
     /**
@@ -101,19 +103,17 @@ public class MainActivity extends AppCompatActivity
         StepDetailFragment detailFragment = new StepDetailFragment();
         detailFragment.setArguments(args);
 
-        mCurrentFragment = detailFragment;
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.frag_container,
+        getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.frag_container,
                 detailFragment).commit();
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        // Save the current fragment's instance
-        getSupportFragmentManager().putFragment(
-                outState, KEY_CURRENT_FRAGMENT, mCurrentFragment);
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     /**

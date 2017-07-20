@@ -60,6 +60,8 @@ public class StepDetailFragment extends Fragment {
             Log.v("detail", "recipe is not null!");
             List<Step> stepsList = mCurrentRecipe.getSteps();
             mStepDescriptionTextView.setText(stepsList.get(mStepNumber).getDescription());
+        } else {
+
         }
 
         return view;
@@ -72,6 +74,8 @@ public class StepDetailFragment extends Fragment {
         if (savedInstanceState != null) {
             mCurrentRecipe = (Recipe) savedInstanceState.getSerializable(TAG_RECIPE_OBJECT);
             Log.v("detail", "what");
+            List<Step> stepsList = mCurrentRecipe.getSteps();
+            mStepDescriptionTextView.setText(stepsList.get(mStepNumber).getDescription());
         }
     }
 

@@ -2,4 +2,5 @@
 <resources>
 
     <bool name="tabletMode">false</bool>
+    <bool name="dualPane">false</bool>
 </resources>
