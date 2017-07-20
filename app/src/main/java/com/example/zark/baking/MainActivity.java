@@ -1,10 +1,12 @@
 package com.example.zark.baking;
 
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.zark.baking.models.Recipe;
@@ -28,13 +30,13 @@ public class MainActivity extends AppCompatActivity
     private static final String KEY_RECIPE_OVERVIEW_FRAGMENT = "RecipeOverviewFragment";
     private static final String KEY_RECIPE_CARDS_FRAGMENT = "RecipeCardsFragment";
     private static final String KEY_STEP_NUMBER = "stepNumber";
-    private static final String KEY_CURRENT_FRAGMENT = "currentFragment";
 
     private Recipe mSelectedRecipe;
     private RecipeCardsFragment mRecipeCardsFragment;
     private RecipeOverviewFragment mRecipeOverviewFragment;
-    private boolean mDualPane;
-    private boolean mTabletMode;
+    private View mDetailsPane;
+    private boolean mDualPane = false;
+    private boolean mTabletMode = false;
 
 
     @Override
@@ -42,9 +44,18 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // If this view exists, which only exists in the sw960dp version of activity_mail.xml,
+        // then dual pane mode will be enabled
+        mDetailsPane = findViewById(R.id.detail_container);
+        if (mDetailsPane != null) {
+            Log.v(TAG, "Dual pane enabled");
+            mDualPane = true;
+            hideDetailsPane();
+        }
 
-        mDualPane = getResources().getBoolean(R.bool.tabletMode);
-        mTabletMode = getResources().getBoolean(R.bool.dualPane);
+        int screenSize = getResources().getConfiguration().screenWidthDp;
+        Log.v(TAG, "Screen width = " + screenSize + " " + mDetailsPane);
+        Log.v(TAG, "Smallest width = " + getResources().getConfiguration().smallestScreenWidthDp);
 
         // Event Bus for sending Recipe objects
         sRecipeBus = RecipeBus.getBus();
@@ -63,8 +74,18 @@ public class MainActivity extends AppCompatActivity
         super.onSaveInstanceState(outState);
     }
 
-    public void displayRecipeCardFragment() {
+    private void showDetailsPane() {
+        mDetailsPane.setVisibility(View.GONE);
+    }
 
+    private void hideDetailsPane() {
+        mDetailsPane.setVisibility(View.VISIBLE);
+    }
+
+    public void displayRecipeCardFragment() {
+        if (mDualPane) {
+            hideDetailsPane();
+        }
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.frag_container, mRecipeCardsFragment).commit();
     }
@@ -74,6 +95,12 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onRecipeSelection() {
+        // If dual pane is enabled, display the first step in the detail pane
+        if (mDualPane) {
+            showDetailsPane();
+            displayStepDetailFragment(0);
+        }
+
         displayRecipeOverviewFragment();
     }
 
@@ -89,7 +116,6 @@ public class MainActivity extends AppCompatActivity
      * From RecipeOverviewFragment
      *
      * @param stepNumber the step that the user selected
-     *
      */
     @Override
     public void OnStepClicked(int stepNumber) {
@@ -103,8 +129,15 @@ public class MainActivity extends AppCompatActivity
         StepDetailFragment detailFragment = new StepDetailFragment();
         detailFragment.setArguments(args);
 
-        getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.frag_container,
-                detailFragment).commit();
+        // if dual pane is enabled, open this StepDetailFragment in the detail pane
+        if (mDualPane) {
+            getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(
+                    R.id.detail_container,
+                    detailFragment).commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.frag_container,
+                    detailFragment).commit();
+        }
     }
 
     @Override
