@@ -63,8 +63,6 @@ public class RecipeCardsFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.v(TAG, "We're inside the Cards!");
-
         View view = inflater.inflate(R.layout.fragment_recipe_cards, container, false);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recipe_cards_recycler_view);
@@ -107,7 +105,7 @@ public class RecipeCardsFragment extends Fragment implements
 
                 hideEmptyState();
 
-                Log.v(TAG, "Hey, I'm talking again");
+                Log.v(TAG, "Hey, guys, I'm talking again");
 
                 mRecipeList = response.body();
                 mAdapter.setNewRecipeList(mRecipeList);
