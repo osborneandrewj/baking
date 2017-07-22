@@ -4,30 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.example.zark.baking.RecipeDetailActivity">
-
-    <FrameLayout
-        android:background="@color/colorPrimaryDark"
-        android:id="@+id/main_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"></FrameLayout>
 
 
     <TextView
         android:id="@+id/button_back"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@android:color/holo_red_light"
-        tools:text="Previous" />
+        android:layout_height="50dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="1dp"
+        android:background="@color/colorBtnBack"
+        android:gravity="center"
+        android:text="@string/btn_back"
+        android:textAppearance="@android:style/TextAppearance.Material.Large.Inverse"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/button_next" />
 
     <TextView
         android:id="@+id/button_next"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@android:color/holo_green_light"
-        tools:text="Next" />
+        android:layout_height="50dp"
+        android:background="@color/colorBtnNext"
+        android:gravity="center"
+        android:text="@string/btn_next"
+        android:textAppearance="@android:style/TextAppearance.Material.Large.Inverse"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toRightOf="@+id/button_back"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/main_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/button_back"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>

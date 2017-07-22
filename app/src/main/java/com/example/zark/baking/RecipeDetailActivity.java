@@ -1,9 +1,11 @@
 package com.example.zark.baking;
 
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.zark.baking.models.Recipe;
 import com.example.zark.baking.models.Step;
@@ -27,12 +29,17 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
     private View mDetailsPane;
     private boolean mDualPane = false;
     private Recipe mCurrentRecipe;
+    private int mCurrentStepDisplayed;
+    private TextView mButtonNext;
+    private TextView mButtonBack;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Event Bus for sending Recipe objects to fragments
         sRecipeBus = RecipeBus.getBus();
@@ -42,6 +49,24 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
         mDetailsPane = findViewById(R.id.detail_container);
         if (mDetailsPane != null) {
             mDualPane = true;
+        }
+
+        if (!mDualPane) {
+            // Navigation buttons for phone
+            mButtonNext = (TextView) findViewById(R.id.button_next);
+            mButtonNext.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    displayStepDetail(mCurrentStepDisplayed + 1);
+                }
+            });
+            mButtonBack = (TextView) findViewById(R.id.button_back);
+            mButtonBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    displayStepDetail(mCurrentStepDisplayed - 1);
+                }
+            });
         }
 
         if (savedInstanceState == null) {
@@ -55,6 +80,11 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
             }
         } else {
             mCurrentRecipe = savedInstanceState.getParcelable(KEY_SELECTED_RECIPE);
+            // If there is nothing in the back stack then the user is currently looking at
+            // the recipe overview, in which case we do not want the navigation buttons
+            if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                hideNavigationButtons();
+            }
         }
 
         getSupportActionBar().setTitle(mCurrentRecipe.getName());
@@ -73,6 +103,8 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_container, mRecipeOverviewFragment).commit();
+
+        hideNavigationButtons();
     }
 
     /**
@@ -86,9 +118,20 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
     }
 
     public void displayStepDetail(int stepNumber) {
+
+        mCurrentStepDisplayed = stepNumber;
+
+        // Error checking
+        if (stepNumber < 0) {
+            mCurrentStepDisplayed = 0;
+        }
+        List<Step> stepsList = mCurrentRecipe.getSteps();
+        if (stepNumber > stepsList.size() - 1) {
+            mCurrentStepDisplayed = stepsList.size() - 1;
+        }
+
         Bundle args = new Bundle();
-        args.putInt(KEY_STEP_NUMBER, stepNumber);
-        args.putParcelable(KEY_SELECTED_STEP, getCurrentStep(stepNumber));
+        args.putParcelable(KEY_SELECTED_STEP, getCurrentStep(mCurrentStepDisplayed));
         StepDetailFragment detailFragment = new StepDetailFragment();
         detailFragment.setArguments(args);
 
@@ -99,6 +142,8 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
             getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.main_container,
                     detailFragment).commit();
         }
+
+        showNavigationButtons();
     }
 
     /**
@@ -113,10 +158,33 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
         return currentStep;
     }
 
+    public void showNavigationButtons() {
+        if (mDualPane) {
+            return;
+        }
+        mButtonNext.setVisibility(View.VISIBLE);
+        mButtonBack.setVisibility(View.VISIBLE);
+    }
+
+    public void hideNavigationButtons() {
+        if (mDualPane) {
+            return;
+        }
+        mButtonNext.setVisibility(View.GONE);
+        mButtonBack.setVisibility(View.GONE);
+    }
+
     @Override
     public void onBackPressed() {
+        // If dual pane mode is enabled we want to user to navigate back to the previous activity
+        if (mDualPane) {
+            super.onBackPressed();
+        }
+        // If the user is viewing a step detail, we want them to navigate back to the recipe
+        // overview (index of 0 in the back stack)
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            getSupportFragmentManager().popBackStack();
+            getSupportFragmentManager().popBackStack(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            hideNavigationButtons();
         } else {
             super.onBackPressed();
         }

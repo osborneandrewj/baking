@@ -17,7 +17,9 @@ import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
 /**
+ * Created by Andrew Osborne 2017
  *
+ * Food thumbnail Created by Onlyyouqj - Freepik.com
  */
 
 public class MainActivity extends AppCompatActivity
@@ -38,6 +40,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         // Event Bus for sending Recipe objects
         sRecipeBus = RecipeBus.getBus();
 

@@ -102,7 +102,7 @@ public class RecipeCardAdapter
             super(view);
 
             // Enable click handling
-            mCardView = view.findViewById(R.id.cardview_item);
+            mCardView = (CardView) view.findViewById(R.id.cardview_item);
 
             // Set data
             mRecipeTitleTextView = (TextView) view.findViewById(R.id.tv_recipie_title);

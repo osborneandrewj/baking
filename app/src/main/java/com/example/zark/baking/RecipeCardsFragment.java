@@ -1,11 +1,13 @@
 package com.example.zark.baking;
 
 import android.content.Context;
-import android.net.Uri;
+import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +39,8 @@ public class RecipeCardsFragment extends Fragment implements
 
     private static final String TAG = RecipeCardsFragment.class.getSimpleName();
     private static final int ONE_CARD_WIDE = 1;
+    private static final int TWO_CARDS_WIDE = 2;
+    private static final int THREE_CARDS_WIDE = 3;
 
     private List<Recipe> mRecipeList;
 
@@ -44,7 +48,8 @@ public class RecipeCardsFragment extends Fragment implements
     private RecipeCardAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutmanager;
     private RecipeDbApi mService;
-    private boolean mDualPane;
+    private boolean mTabletMode;
+    private boolean mLandscapeMode = false;
 
     private OnRecipeSelectionListener mListener;
 
@@ -63,13 +68,31 @@ public class RecipeCardsFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mLandscapeMode = true;
+        }
+        if (getResources().getConfiguration().screenWidthDp >= 900) {
+            mTabletMode = true;
+        }
+
         View view = inflater.inflate(R.layout.fragment_recipe_cards, container, false);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recipe_cards_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         // Select gridlayout size based on screen width and orientation
-        mLayoutmanager = new GridLayoutManager(getContext(), ONE_CARD_WIDE);
-
+        if (mTabletMode) {
+            if (mLandscapeMode) {
+                mLayoutmanager = new GridLayoutManager(getContext(), THREE_CARDS_WIDE);
+            } else {
+                mLayoutmanager = new GridLayoutManager(getContext(), TWO_CARDS_WIDE);
+            }
+        } else {
+            if (mLandscapeMode) {
+                mLayoutmanager = new GridLayoutManager(getContext(), TWO_CARDS_WIDE);
+            } else {
+                mLayoutmanager = new GridLayoutManager(getContext(), ONE_CARD_WIDE);
+            }
+        }
         mAdapter = new RecipeCardAdapter(getContext(), new ArrayList<Recipe>(), this);
 
         mRecyclerView.setAdapter(mAdapter);

@@ -6,4 +6,8 @@
     <string name="ingredients_list_title">Ingredients</string>
     <string name="directions_list_title">Directions</string>
 
+    <!--Navigation-->
+    <string name="btn_back">Back</string>
+    <string name="btn_next">Next</string>
+
 </resources>

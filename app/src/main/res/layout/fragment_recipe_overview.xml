@@ -12,38 +12,49 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:text="@string/ingredients_list_title"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            tools:text="Ingredients" />
-
-        <View
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="2dp"
-            android:background="@color/colorLightGrey" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/ingredients_recycler_view"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:layout_marginTop="4dp"
-            android:paddingStart="4dp">
+            android:layout_margin="0dp"
+            android:layout_marginBottom="0dp"
+            android:orientation="vertical">
 
-        </android.support.v7.widget.RecyclerView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="@string/ingredients_list_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                tools:text="Ingredients" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/colorLightGrey" />
+            <!--<View-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="2dp"-->
+                <!--android:layout_marginTop="2dp"-->
+                <!--android:background="@color/colorLightGrey" />-->
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/ingredients_recycler_view"
+                android:background="@color/colorLightPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <!--<View-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="2dp"-->
+                <!--android:background="@color/colorLightGrey" />-->
+
+        </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:padding="4dp"
             android:text="@string/directions_list_title"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
@@ -60,6 +71,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"
+            android:background="?android:selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:paddingStart="4dp">
 
         </android.support.v7.widget.RecyclerView>

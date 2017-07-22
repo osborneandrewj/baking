@@ -98,7 +98,7 @@ public class RecipeOverviewFragment extends Fragment implements DirectionsAdapte
 
     private void setupIngredientsList(View view) {
         mIngredientsAdapter = new IngredientsAdapter(getContext(), null);
-        RecyclerView ingredientsRecyclerView = view.findViewById(R.id.ingredients_recycler_view);
+        RecyclerView ingredientsRecyclerView = (RecyclerView) view.findViewById(R.id.ingredients_recycler_view);
         ingredientsRecyclerView.setHasFixedSize(true);
         // Scrolling is handled by the NestedScrollView in the main fragment layout
         RecyclerView.LayoutManager ingredientsLayoutManager = new LinearLayoutManager(getContext()) {
@@ -113,7 +113,7 @@ public class RecipeOverviewFragment extends Fragment implements DirectionsAdapte
 
     private void setupDirectionsList(View view) {
         mDirectionsAdapter = new DirectionsAdapter(getContext(), null, this);
-        RecyclerView directionsRecyclerView = view.findViewById(R.id.directions_recycler_view);
+        RecyclerView directionsRecyclerView = (RecyclerView) view.findViewById(R.id.directions_recycler_view);
         directionsRecyclerView.setHasFixedSize(true);
         // Scrolling is handled by the NestedScrollView in the main fragment layout
         RecyclerView.LayoutManager directionsLayoutManager = new LinearLayoutManager(getContext()) {
