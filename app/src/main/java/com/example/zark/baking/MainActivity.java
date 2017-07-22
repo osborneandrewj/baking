@@ -1,19 +1,13 @@
 package com.example.zark.baking;
 
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.net.Uri;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import com.example.zark.baking.models.Recipe;
 import com.example.zark.baking.utilities.RecipeBus;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
 /**
@@ -79,8 +73,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Receives the Recipe object corresponding to the user-selected recipe CardView. We need to
-     * get this Recipe object as it needs to be produced in this activity.
+     * Receives the Recipe object corresponding to the user-selected recipe CardView.
      */
     @Subscribe
     public void getRecipeObjectFromAdapter(Recipe selectedRecipe) {
