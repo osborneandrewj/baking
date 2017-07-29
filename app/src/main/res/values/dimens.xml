@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Recipe Detail Activity-->
+
+    <dimen name="nagivation_button_height">50dp</dimen>
+    <dimen name="nagivation_button_margin">1dp</dimen>
+
+    <!--Direction Step Item-->
+    <dimen name="direction_circle_diameter">50dp</dimen>
+    <dimen name="direction_circle_margin">4dp</dimen>
+    <dimen name="direction_step_description_margin">4dp</dimen>
+
+    <!--Recipe Overview-->
+    <dimen name="overview_ingred_title_padding">4dp</dimen>
+    <dimen name="ingredients_recycler_view_margin">4dp</dimen>
+
+    <!--
+Refer to App Widget Documentation for margin information
+http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
+    -->
+    <dimen name="widget_margin">8dp</dimen>
+</resources>
