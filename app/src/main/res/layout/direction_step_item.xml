@@ -12,9 +12,9 @@
 
     <TextView
         android:id="@+id/tv_step_number"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="4dp"
+        android:layout_width="@dimen/direction_circle_diameter"
+        android:layout_height="@dimen/direction_circle_diameter"
+        android:layout_margin="@dimen/direction_circle_margin"
         android:background="@drawable/circle_direction_step"
         android:clickable="true"
         android:focusable="true"
@@ -27,7 +27,7 @@
         android:id="@+id/tv_step_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
+        android:layout_margin="@dimen/direction_step_description_margin"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
 </LinearLayout>

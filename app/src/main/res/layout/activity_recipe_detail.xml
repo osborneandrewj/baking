@@ -10,10 +10,8 @@
     <TextView
         android:id="@+id/button_back"
         android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="1dp"
+        android:layout_height="@dimen/nagivation_button_height"
+        android:layout_marginRight="@dimen/nagivation_button_margin"
         android:background="@color/colorBtnBack"
         android:gravity="center"
         android:text="@string/btn_back"
@@ -26,7 +24,7 @@
     <TextView
         android:id="@+id/button_next"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/nagivation_button_height"
         android:background="@color/colorBtnNext"
         android:gravity="center"
         android:text="@string/btn_next"

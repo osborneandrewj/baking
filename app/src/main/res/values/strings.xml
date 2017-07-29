@@ -6,8 +6,11 @@
     <string name="ingredients_list_title">Ingredients</string>
     <string name="directions_list_title">Directions</string>
 
-    <!--Navigation-->
+    <!--Recipe Detail Activity-->
     <string name="btn_back">Back</string>
     <string name="btn_next">Next</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+
 
 </resources>
