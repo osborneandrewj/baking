@@ -9,6 +9,12 @@ import java.text.DecimalFormat;
 
 public class MyNumberUtils {
 
+    /**
+     * Takes an unformatted double (i.e. 1.0) and transforms this into a format appropriate for recipes (i.e. 1)
+     *
+     * @param unformattedQuantity that will be converted to a formatted number
+     * @return the double into a format appropriate for recipe ingredients
+     */
     public static String formatQuantityToString(Double unformattedQuantity) {
         String formattedValue = new DecimalFormat("0.####").format(unformattedQuantity);
         return formattedValue;

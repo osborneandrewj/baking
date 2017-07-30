@@ -1,12 +1,15 @@
 package com.example.zark.baking;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.zark.baking.models.Recipe;
 import com.example.zark.baking.utilities.RecipeBus;
+import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -65,11 +68,19 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onRecipeSelection() {
+
+        // First store this information in SharedPreferences for retrieval by the widget
+        Gson gson = new Gson();
+        String recipeString = gson.toJson(mSelectedRecipe);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(KEY_SELECTED_RECIPE, recipeString);
+        editor.apply();
+
+        // Then open the recipe itself
         Intent launchDetailActivityIntent = new Intent(this, RecipeDetailActivity.class);
         launchDetailActivityIntent.putExtra(KEY_SELECTED_RECIPE, mSelectedRecipe);
-        Log.v(TAG, "Launching activity: " + mSelectedRecipe.getName());
         startActivity(launchDetailActivityIntent);
-
     }
 
     /**
@@ -77,7 +88,6 @@ public class MainActivity extends AppCompatActivity
      */
     @Subscribe
     public void getRecipeObjectFromAdapter(Recipe selectedRecipe) {
-        Log.v(TAG, "Got something: " + selectedRecipe.getName());
         mSelectedRecipe = selectedRecipe;
     }
 
