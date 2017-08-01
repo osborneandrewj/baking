@@ -13,6 +13,7 @@
 
     <color name="colorLightText">#FFFFFF</color>
     <color name="colorLightGrey">#e6e6e6</color>
+    <color name="colorDarkText">#000000</color>
 
     <color name="colorBtnBack">#757575</color>
     <color name="colorBtnNext">#757575</color>

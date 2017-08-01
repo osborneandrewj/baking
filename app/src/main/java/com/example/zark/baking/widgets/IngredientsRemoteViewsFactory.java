@@ -20,12 +20,14 @@ import java.util.List;
 
 /**
  * Created by Andrew Osborne on 7/29/2017.
+ *
  */
 
-public class IngredientListProvider implements RemoteViewsService.RemoteViewsFactory {
+public class IngredientsRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
-    private static final String TAG = IngredientListProvider.class.getSimpleName();
+    private static final String TAG = IngredientsRemoteViewsFactory.class.getSimpleName();
     private static final String KEY_SELECTED_RECIPE = "selectedRecipe";
+    private Recipe mRecipe;
     private List<Ingredient> mIngredientsList = new ArrayList<>();
     private Context mContext;
     private int mAppWidgetId;
@@ -34,36 +36,28 @@ public class IngredientListProvider implements RemoteViewsService.RemoteViewsFac
     /**
      * Public constructor
      */
-    public IngredientListProvider(Context context, Intent intent) {
+    public IngredientsRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
         mIntent = intent;
+        mAppWidgetId = mIntent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                AppWidgetManager.INVALID_APPWIDGET_ID);
     }
 
     @Override
     public void onCreate() {
 
-        mAppWidgetId = mIntent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                AppWidgetManager.INVALID_APPWIDGET_ID);
-
-        Log.v(TAG, "Provider created.");
-
-        if (mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-            Gson gson = new Gson();
-            String recipeString = preferences.getString(KEY_SELECTED_RECIPE, null);
-            if (recipeString != null) {
-                Recipe currentRecipe = gson.fromJson(recipeString, Recipe.class);
-                mIngredientsList = currentRecipe.getIngredients();
-                Log.v(TAG, "Sending a recipe to the widget! " + currentRecipe.getName());
-            }
-        }
-
     }
 
     @Override
     public void onDataSetChanged() {
-
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        Gson gson = new Gson();
+        String recipeString = preferences.getString(KEY_SELECTED_RECIPE, null);
+        if (recipeString != null) {
+            mRecipe = gson.fromJson(recipeString, Recipe.class);
+            mIngredientsList = mRecipe.getIngredients();
+            Log.v(TAG, "Sending a recipe to the widget again! " + mRecipe.getName());
+        }
     }
 
     @Override
@@ -87,19 +81,20 @@ public class IngredientListProvider implements RemoteViewsService.RemoteViewsFac
      */
     @Override
     public RemoteViews getViewAt(int i) {
-        final RemoteViews remoteView = new RemoteViews(
+        final RemoteViews row = new RemoteViews(
                 mContext.getPackageName(), R.layout.ingredient_item);
 
         // Get the Ingredient at the selected position
         Ingredient ingredient = mIngredientsList.get(i);
         // Set the data from this Ingredient to the corresponding lines in the listview
-        remoteView.setTextViewText(R.id.tv_ingredient_quantity,
+
+        row.setTextViewText(R.id.tv_ingredient_quantity,
                 MyNumberUtils.formatQuantityToString(ingredient.getQuantity()));
-        remoteView.setTextViewText(R.id.tv_ingredient_unit,
+        row.setTextViewText(R.id.tv_ingredient_unit,
                 ingredient.getMeasure());
-        remoteView.setTextViewText(R.id.tv_ingredient_material,
+        row.setTextViewText(R.id.tv_ingredient_material,
                 ingredient.getIngredient());
-        return remoteView;
+        return row;
     }
 
     @Override
