@@ -125,18 +125,13 @@ public class RecipeCardsFragment extends Fragment implements
         callRecipes.enqueue(new Callback<List<Recipe>>() {
             @Override
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-
                 hideEmptyState();
-
-                Log.v(TAG, "Communicating with server...");
-
                 mRecipeList = response.body();
                 mAdapter.setNewRecipeList(mRecipeList);
             }
 
             @Override
             public void onFailure(Call<List<Recipe>> call, Throwable t) {
-                Log.v(TAG, "Shoot, nothing here.");
                 t.printStackTrace();
                 showEmptyState();
             }
