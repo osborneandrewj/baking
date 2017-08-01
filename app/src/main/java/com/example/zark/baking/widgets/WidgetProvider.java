@@ -37,15 +37,12 @@ public class WidgetProvider extends AppWidgetProvider {
             if (recipeString != null) {
                 Recipe recipe = gson.fromJson(recipeString, Recipe.class);
                 widget.setTextViewText(R.id.widget_title, recipe.getName());
-
             }
 
             Intent serviceIntent = new Intent(context, WidgetService.class);
             serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
-
             widget.setRemoteAdapter(appWidgetId, R.id.widget_list, serviceIntent);
-
             appWidgetManager.updateAppWidget(appWidgetId, widget);
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
@@ -61,6 +58,9 @@ public class WidgetProvider extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
+    /**
+     * This method is used to update the widget when the SharedPreferences data has changed
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         if (mAppWidgetIds != null) {

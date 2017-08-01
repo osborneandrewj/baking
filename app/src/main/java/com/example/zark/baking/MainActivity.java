@@ -80,14 +80,11 @@ public class MainActivity extends AppCompatActivity
         editor.putString(KEY_SELECTED_RECIPE, recipeString);
         editor.apply();
 
+        // Notify the widget that the data has changed
         ComponentName widget = new ComponentName(getApplication(), WidgetProvider.class);
         int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(widget);
-        WidgetProvider myWidget = new WidgetProvider();
-        myWidget.onUpdate(this, AppWidgetManager.getInstance(this), ids);
-
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.widget_list);
-        Log.v(TAG, "ids = " + ids[0]);
 
         // Then open the recipe itself
         Intent launchDetailActivityIntent = new Intent(this, RecipeDetailActivity.class);

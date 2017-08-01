@@ -23,12 +23,11 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:appcompat-v7:26.0.0'
 
-    // Used for local unit tests (JUnit 4 framework)
+    // Used for UI tests
     testCompile 'junit:junit:4.12'
-
-    // Used for instrumented tests
     androidTestCompile 'com.android.support:support-annotations:26.0.0'
     androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
 
     // Used to display the list of recipe cards
     compile 'com.android.support:cardview-v7:26.0.0'

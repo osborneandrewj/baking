@@ -87,7 +87,6 @@ public class IngredientsRemoteViewsFactory implements RemoteViewsService.RemoteV
         // Get the Ingredient at the selected position
         Ingredient ingredient = mIngredientsList.get(i);
         // Set the data from this Ingredient to the corresponding lines in the listview
-
         row.setTextViewText(R.id.tv_ingredient_quantity,
                 MyNumberUtils.formatQuantityToString(ingredient.getQuantity()));
         row.setTextViewText(R.id.tv_ingredient_unit,
