@@ -9,8 +9,11 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.zark.baking.models.Recipe;
+import com.example.zark.baking.utilities.MyNetworkUtils;
 import com.example.zark.baking.utilities.RecipeBus;
 import com.example.zark.baking.widgets.WidgetProvider;
 import com.google.gson.Gson;
@@ -19,8 +22,8 @@ import com.squareup.otto.Subscribe;
 
 /**
  * Created by Andrew Osborne 2017
- *
- * Food thumbnail Created by Onlyyouqj - Freepik.com
+ * <p>
+ * Default recipe thumbnail Created by Onlyyouqj - Freepik.com
  */
 
 public class MainActivity extends AppCompatActivity
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity
 
     private Recipe mSelectedRecipe;
     private RecipeCardsFragment mRecipeCardsFragment;
+    private TextView mEmptyState;
 
 
     @Override
@@ -41,11 +45,20 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mEmptyState = findViewById(R.id.empty_view);
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
         // Event Bus for sending Recipe objects
         sRecipeBus = RecipeBus.getBus();
+
+        if (!MyNetworkUtils.doesNetworkConnectionExist(this)) {
+            showEmptyState();
+            return;
+        } else {
+            hideEmptyState();
+        }
 
         if (savedInstanceState == null) {
             mRecipeCardsFragment = new RecipeCardsFragment();
@@ -65,6 +78,20 @@ public class MainActivity extends AppCompatActivity
 
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.frag_container, mRecipeCardsFragment).commit();
+    }
+
+    public void showEmptyState() {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().show();
+        }
+        mEmptyState.setVisibility(View.VISIBLE);
+    }
+
+    public void hideEmptyState() {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+        mEmptyState.setVisibility(View.GONE);
     }
 
     /**
@@ -91,8 +118,9 @@ public class MainActivity extends AppCompatActivity
         Intent launchDetailActivityIntent = new Intent(this, RecipeDetailActivity.class);
         launchDetailActivityIntent.putExtra(KEY_SELECTED_RECIPE, mSelectedRecipe);
 
-    startActivity(launchDetailActivityIntent);
-}
+        startActivity(launchDetailActivityIntent);
+    }
+
     /**
      * Receives the Recipe object corresponding to the user-selected recipe CardView.
      */

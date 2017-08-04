@@ -32,6 +32,8 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
     private int mCurrentStepDisplayed;
     private TextView mButtonNext;
     private TextView mButtonBack;
+    private TextView mEmptyState;
+
 
 
     @Override

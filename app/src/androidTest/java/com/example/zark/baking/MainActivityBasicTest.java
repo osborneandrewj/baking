@@ -29,7 +29,8 @@ public class MainActivityBasicTest {
     @Test
     public void clickRecipeCard_openDetailActivity() {
 
-        // Select a recipe card from the recyclerView
+        // Select a recipe card from the recyclerView in the RecipeCardsFragment which
+        // MainActivity opens
         onView(withId(R.id.recipe_cards_recycler_view))
                 .perform(actionOnItemAtPosition(0, click()));
 

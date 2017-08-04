@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.zark.baking.adapters.RecipeCardAdapter;
 import com.example.zark.baking.models.Recipe;
@@ -47,6 +49,7 @@ public class RecipeCardsFragment extends Fragment implements
     private RecyclerView mRecyclerView;
     private RecipeCardAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutmanager;
+    private TextView mEmptyStateTextView;
     private RecipeDbApi mService;
     private boolean mTabletMode;
     private boolean mLandscapeMode = false;
@@ -98,6 +101,9 @@ public class RecipeCardsFragment extends Fragment implements
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(mLayoutmanager);
 
+        mEmptyStateTextView = (TextView) view.findViewById(R.id.empty_view);
+        hideEmptyState();
+
         return view;
     }
 
@@ -139,11 +145,19 @@ public class RecipeCardsFragment extends Fragment implements
     }
 
     public void showEmptyState() {
-        //TODO: fill in
+        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        }
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mEmptyStateTextView.setVisibility(View.VISIBLE);
     }
 
     public void hideEmptyState() {
-        //TODO: fill in
+        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        }
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mEmptyStateTextView.setVisibility(View.GONE);
     }
 
     @Override
