@@ -17,10 +17,30 @@
     <!--Recipe Overview-->
     <dimen name="overview_ingred_title_padding">4dp</dimen>
     <dimen name="ingredients_recycler_view_margin">4dp</dimen>
+    <dimen name="overview_divider_height">2dp</dimen>
+    <dimen name="overview_directions_margin">4dp</dimen>
+    <dimen name="overview_directions_padding">4dp</dimen>
+
+    <!--Step Detail-->
+    <dimen name="detail_description_padding">8dp</dimen>
+
+    <!--Ingredient-->
+    <dimen name="ingredient_padding">4dp</dimen>
+
+    <!--Recipe Card-->
+    <dimen name="card_height">225dp</dimen>
+    <dimen name="card_corner_radius">2dp</dimen>
+    <dimen name="card_elevation">3dp</dimen>
+    <dimen name="card_padding_bottom">4dp</dimen>
+    <dimen name="card_padding_image">4dp</dimen>
+    <dimen name="card_title_margin">4dp</dimen>
+    <dimen name="card_title_margin_vertical">8dp</dimen>
+    <dimen name="card_guideline_percentage">0.4</dimen>
 
     <!--
 Refer to App Widget Documentation for margin information
 http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     -->
     <dimen name="widget_margin">8dp</dimen>
+
 </resources>
