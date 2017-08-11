@@ -15,5 +15,8 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
 
+    <!--Recipe Widget-->
+    <string name="empty_view_widget">Select a recipe to show a shopping list.</string>
+    <string name="widget_title">Shopping List</string>
 
 </resources>

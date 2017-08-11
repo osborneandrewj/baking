@@ -101,7 +101,7 @@ public class RecipeCardsFragment extends Fragment implements
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(mLayoutmanager);
 
-        mEmptyStateTextView = (TextView) view.findViewById(R.id.empty_view);
+        mEmptyStateTextView = view.findViewById(R.id.empty_view);
         hideEmptyState();
 
         return view;

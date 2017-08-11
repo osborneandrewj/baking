@@ -198,7 +198,6 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
      */
     @Produce
     public Recipe produceRecipeForRecipeDetailActivity() {
-        Log.v(TAG, "Producing recipe: " + mCurrentRecipe.getName());
         return mCurrentRecipe;
     }
 

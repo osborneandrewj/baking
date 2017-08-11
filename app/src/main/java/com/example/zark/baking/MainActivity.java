@@ -113,6 +113,8 @@ public class MainActivity extends AppCompatActivity
         int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(widget);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.widget_list);
+        WidgetProvider widgetProvider = new WidgetProvider();
+        widgetProvider.updateWidgetTitles(getApplication(), ids);
 
         // Then open the recipe itself
         Intent launchDetailActivityIntent = new Intent(this, RecipeDetailActivity.class);
