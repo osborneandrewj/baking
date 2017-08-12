@@ -35,7 +35,6 @@
     <dimen name="card_padding_image">4dp</dimen>
     <dimen name="card_title_margin">4dp</dimen>
     <dimen name="card_title_margin_vertical">8dp</dimen>
-    <dimen name="card_guideline_percentage">0.4</dimen>
 
     <!--
 Refer to App Widget Documentation for margin information
