@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -43,6 +44,8 @@ public class StepDetailFragment extends Fragment {
     private static final String KEY_SELECTED_STEP = "selectedStep";
     private static final int CONTROLS_VISIBLE = 1;
     private static final int CONTROLS_GONE = 0;
+    private static final String EXOPLAYER_STATE = "exoplayerState";
+    private static final long EXOPLAYER_STATE_DEFAULT = -1;
     private TextView mStepDescriptionTextView;
     private ImageView mStepDirectionImage;
     private Step mCurrentStep;
@@ -76,7 +79,7 @@ public class StepDetailFragment extends Fragment {
                     prepareVideoPlayer();
                     generateVideoUriFromStep();
                     showVideoPlayer();
-                    playVideo();
+                    playVideo(null);
                 }
             }
             // Something is saved - rebuild the fragment
@@ -86,7 +89,12 @@ public class StepDetailFragment extends Fragment {
                 prepareVideoPlayer();
                 generateVideoUriFromStep();
                 showVideoPlayer();
-                playVideo();
+                if (savedInstanceState.getLong(EXOPLAYER_STATE) == EXOPLAYER_STATE_DEFAULT) {
+                    playVideo(null);
+                } else {
+                    playVideo(savedInstanceState.getLong(EXOPLAYER_STATE));
+                }
+
             }
         }
 
@@ -126,7 +134,8 @@ public class StepDetailFragment extends Fragment {
 
     }
 
-    public void playVideo() {
+    @Nullable
+    public void playVideo(@Nullable Long savedPosition) {
 
         // If there is no Uri in the Step object, return early.
         if (mVideoUri == null || TextUtils.isEmpty(mVideoUri.toString())) {
@@ -144,6 +153,10 @@ public class StepDetailFragment extends Fragment {
                 dataSourceFactory, extractorsFactory, null, null);
         // Prepare the player with the source
         mPlayer.prepare(videoSource);
+        // Seek to saved position if available
+        if (savedPosition != null) {
+            mPlayer.seekTo(savedPosition);
+        }
         mPlayer.setPlayWhenReady(true);
     }
 
@@ -177,6 +190,11 @@ public class StepDetailFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_SELECTED_STEP, mCurrentStep);
+        long currentPosition = EXOPLAYER_STATE_DEFAULT;
+        if (mPlayer.getCurrentPosition() > 0) {
+            currentPosition = mPlayer.getCurrentPosition();
+        }
+        outState.putLong(EXOPLAYER_STATE, currentPosition);
     }
 
     @Override
