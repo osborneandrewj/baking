@@ -51,4 +51,7 @@ dependencies {
 
     // Used to play videos
     compile 'com.google.android.exoplayer:exoplayer:r2.5.0-beta1'
+
+    // Used to manage recipe images
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

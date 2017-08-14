@@ -3,6 +3,7 @@ package com.example.zark.baking.adapters;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.example.zark.baking.MainActivity;
 import com.example.zark.baking.R;
 import com.example.zark.baking.models.Recipe;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -62,6 +64,12 @@ public class RecipeCardAdapter
         // Get current recipe
         mCurrentRecipe = mRecipeList.get(position);
         holder.mRecipeTitleTextView.setText(mCurrentRecipe.getName());
+        // If there is an image, load it into the recipe card
+        if (mCurrentRecipe.getImage() != null && !TextUtils.isEmpty(mCurrentRecipe.getImage())) {
+            Picasso.with(mContext).load(mCurrentRecipe.getImage()).into(
+                    holder.mThumbnail
+            );
+        }
 
         // When clicked, the recipe card should open RecipeDetailActivity
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
@@ -98,15 +106,17 @@ public class RecipeCardAdapter
 
         public TextView mRecipeTitleTextView;
         public CardView mCardView;
+        public ImageView mThumbnail;
 
         public RecipeCardAdapterViewHolder(View view) {
             super(view);
 
             // Enable click handling
-            mCardView = (CardView) view.findViewById(R.id.cardview_item);
+            mCardView = view.findViewById(R.id.cardview_item);
 
             // Set data
-            mRecipeTitleTextView = (TextView) view.findViewById(R.id.tv_recipie_title);
+            mRecipeTitleTextView = view.findViewById(R.id.tv_recipie_title);
+            mThumbnail = view.findViewById(R.id.thumbnail);
         }
     }
 }

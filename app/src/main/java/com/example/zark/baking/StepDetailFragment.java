@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.zark.baking.models.Step;
@@ -28,6 +29,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 
 /**
@@ -40,6 +42,7 @@ public class StepDetailFragment extends Fragment {
     private static final int CONTROLS_VISIBLE = 1;
     private static final int CONTROLS_GONE = 0;
     private TextView mStepDescriptionTextView;
+    private ImageView mStepDirectionImage;
     private Step mCurrentStep;
     private Handler mMainHandler;
     private SimpleExoPlayer mPlayer;
@@ -58,8 +61,9 @@ public class StepDetailFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_step_detail, container, false);
 
-        mStepDescriptionTextView = (TextView) view.findViewById(R.id.tv_step_description);
-        mSimpleExoPlayerView = (SimpleExoPlayerView) view.findViewById(R.id.exo_player_view);
+        mStepDescriptionTextView = view.findViewById(R.id.tv_step_description);
+        mSimpleExoPlayerView = view.findViewById(R.id.exo_player_view);
+        mStepDirectionImage = view.findViewById(R.id.img_step_detail);
 
         // First time setup
         if (savedInstanceState == null) {
@@ -153,13 +157,18 @@ public class StepDetailFragment extends Fragment {
         if (mCurrentStep != null) {
             mStepDescriptionTextView.setText(mCurrentStep.getDescription());
         }
+        if (mCurrentStep.getThumbnailURL() != null && !TextUtils.isEmpty(
+                mCurrentStep.getThumbnailURL())) {
+            Picasso.with(getContext()).load(mCurrentStep.getThumbnailURL()).into(
+                    mStepDirectionImage
+            );
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_SELECTED_STEP, mCurrentStep);
-
     }
 
     @Override
