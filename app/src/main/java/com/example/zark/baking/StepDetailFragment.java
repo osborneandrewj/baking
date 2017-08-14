@@ -1,6 +1,7 @@
 package com.example.zark.baking;
 
 
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +24,7 @@ import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -49,6 +51,7 @@ public class StepDetailFragment extends Fragment {
     private SimpleExoPlayerView mSimpleExoPlayerView;
     private Uri mVideoUri;
     private int mVideoControlsVisible = CONTROLS_GONE;
+    private boolean mLandscapeOrientation;
 
     public StepDetailFragment() {
         // Required empty public constructor
@@ -112,6 +115,11 @@ public class StepDetailFragment extends Fragment {
 
         // Create the video player
         mPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
+
+        // Fullscreen if in landscape
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mSimpleExoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+        }
 
         // Bind the video player to the view
         mSimpleExoPlayerView.setPlayer(mPlayer);

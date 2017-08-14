@@ -1,5 +1,6 @@
 package com.example.zark.baking;
 
+import android.content.res.Configuration;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,7 +17,7 @@ import com.squareup.otto.Produce;
 import java.util.List;
 
 
-public class RecipeDetailActivity extends AppCompatActivity implements RecipeOverviewFragment.OnStepClickedListener{
+public class RecipeDetailActivity extends AppCompatActivity implements RecipeOverviewFragment.OnStepClickedListener {
 
     public static Bus sRecipeBus;
 
@@ -35,7 +36,6 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
     private TextView mEmptyState;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +52,14 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
         if (mDetailsPane != null) {
             mDualPane = true;
         }
+
+        // If a phone is in landscape orientation and a step is shown, hide the action bar
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                getSupportActionBar().hide();
+            }
+        }
+
 
         if (!mDualPane) {
             // Navigation buttons for phone
@@ -141,6 +149,12 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
             getSupportFragmentManager().beginTransaction().replace(R.id.detail_container, detailFragment)
                     .commit();
         } else {
+
+            // If a phone is in landscape orientation, hide the action bar
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                getSupportActionBar().hide();
+            }
+            // Now display the fragment
             getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.main_container,
                     detailFragment).commit();
         }
@@ -162,6 +176,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeOve
 
     public void showNavigationButtons() {
         if (mDualPane) {
+            return;
+        }
+        // If a phone is in landscape orientation, hide the navigation buttons to enable full screen
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             return;
         }
         mButtonNext.setVisibility(View.VISIBLE);

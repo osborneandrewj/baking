@@ -80,7 +80,7 @@ public class RecipeCardsFragment extends Fragment implements
 
         View view = inflater.inflate(R.layout.fragment_recipe_cards, container, false);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recipe_cards_recycler_view);
+        mRecyclerView = view.findViewById(R.id.recipe_cards_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         // Select gridlayout size based on screen width and orientation
         if (mTabletMode) {
