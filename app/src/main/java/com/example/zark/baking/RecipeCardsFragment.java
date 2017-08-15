@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -20,6 +23,7 @@ import com.example.zark.baking.adapters.RecipeCardAdapter;
 import com.example.zark.baking.models.Recipe;
 import com.example.zark.baking.retrofit.RecipeDbApi;
 import com.example.zark.baking.retrofit.RecipeDbApiClient;
+import com.example.zark.baking.testing.SimpleIdlingResource;
 import com.example.zark.baking.utilities.MyNetworkUtils;
 
 import java.util.ArrayList;
@@ -56,15 +60,34 @@ public class RecipeCardsFragment extends Fragment implements
 
     private OnRecipeSelectionListener mListener;
 
+    // The Idling Resource which will be null in production.
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
+    // And not null for testing.
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
+    }
+
     public RecipeCardsFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getRecipeDataFromUdacity();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getRecipeDataFromUdacity();
+        //getRecipeDataFromUdacity();
     }
 
     @Override
@@ -112,6 +135,10 @@ public class RecipeCardsFragment extends Fragment implements
      */
     public void getRecipeDataFromUdacity() {
 
+        if (mIdlingResource != null) {
+            mIdlingResource.setIdleState(false);
+        }
+
         if (mRecipeList != null) {
             mAdapter.setNewRecipeList(mRecipeList);
             return;
@@ -134,6 +161,9 @@ public class RecipeCardsFragment extends Fragment implements
                 hideEmptyState();
                 mRecipeList = response.body();
                 mAdapter.setNewRecipeList(mRecipeList);
+                if (mIdlingResource != null) {
+                    mIdlingResource.setIdleState(true);
+                }
             }
 
             @Override
