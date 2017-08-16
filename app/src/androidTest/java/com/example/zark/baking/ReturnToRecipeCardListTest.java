@@ -12,7 +12,6 @@ import android.view.ViewParent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,16 +28,17 @@ import static org.hamcrest.Matchers.allOf;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class ReturnToMainListTest {
+public class ReturnToRecipeCardListTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void exitRecipe_returnToMainListTest() {
-        ViewInteraction cardView = onView(
-                allOf(withId(R.id.cardview_item), isDisplayed()));
-        cardView.perform(click());
+    public void returnToRecipeCardListTest() {
+        // Select a recipe card from the recyclerView in the RecipeCardsFragment which
+        // MainActivity opens
+        onView(withId(R.id.recipe_cards_recycler_view))
+                .perform(actionOnItemAtPosition(0, click()));
 
         ViewInteraction recyclerView = onView(
                 allOf(withId(R.id.directions_recycler_view),
@@ -63,15 +63,18 @@ public class ReturnToMainListTest {
                         isDisplayed()));
         appCompatImageButton.perform(click());
 
-        ViewInteraction viewGroup = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.cardview_item),
+        onView(withId(R.id.recipe_cards_recycler_view))
+                .perform(actionOnItemAtPosition(0, click()));
+
+        ViewInteraction recyclerView2 = onView(
+                allOf(withId(R.id.ingredients_recycler_view),
+                        childAtPosition(
                                 childAtPosition(
-                                        IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class),
-                                        0)),
-                        0),
+                                        withId(R.id.layout_ingredients_directions),
+                                        0),
+                                1),
                         isDisplayed()));
-        viewGroup.check(matches(isDisplayed()));
+        recyclerView2.check(matches(isDisplayed()));
 
     }
 
